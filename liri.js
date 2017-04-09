@@ -1,21 +1,11 @@
 var twitterKeys = require('./keys.js');
-var fs = require('fs');
 var Twitter = require("twitter");
+var fs = require('fs');
 var command = process.argv[2];
 var spotify = require('spotify');
 var userInput = process.argv.slice(3);
-
-  switch (command){
-  case 'my-tweets':
-  getTweets();
-  break;
-
-  case 'spotify-this-song':
-  getSpotify(userInput);
-  break;
-  }
-// if (tweets === 'my-tweets') {
-  // getTweets();
+var request = require('request');
+var logArray = [command, userInput];
 
 
 function getTweets(){
@@ -41,13 +31,7 @@ var params = { screen_name: 'realDonaldTrump'};
   });
 };
 
-//var getArtistNames = function(artist) {
-//  return artist.name;
-//};
-
 function getSpotify(userInput){
-
-	var returned = " ";
 
 	if(userInput.length < 1){
     	userInput = 'Sign'
@@ -58,14 +42,80 @@ function getSpotify(userInput){
 		        return;
 		    }
 
-		 	var firstResult = data.tracks.items[0];
+		 	var path = data.tracks.items[0];
 
-		 	returned += '\n Artist: ' +firstResult.artists[0].name;
-		 	returned += '\n Name: '+ firstResult.name;
-		 	returned += '\n Listen: '+ firstResult.external_urls.spotify;
-		 	returned += '\n Albulm: '+ firstResult.album.name
-		 	returned += '\r\n';
-		    console.log(returned)
+		 	console.log('\n Artist: ' + path.artists[0].name
+		 	 +'\n Name: '+ path.name
+		 	 +'\n Listen: '+ path.external_urls.spotify
+		 	 + '\n Album: '+ path.album.name
+		  	+ '\r\n')
 
+
+	})
+}
+
+function movies(){
+
+  if (userInput <= 1) {
+    userInput = "Mr. Nobody"
+  }
+var urlMovie = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&r=json"
+request (urlMovie, function(err, response, body) {
+
+var moviePath = JSON.parse(body);
+  console.log('\n Movie: ' + moviePath.Title + '\n Released: ' + moviePath.Year
+  + '\n Rated: ' + moviePath.imbdRating + '\n Country: ' + moviePath.Country
+  + '\n Language: ' + moviePath.Language + '\n\n Plot: ' + moviePath.Plot +'\n'
+  + '\n Actors: ' + moviePath.Actors + '\n Website: ' + moviePath.Website
+  + '\n RT Rated: ' + moviePath.Ratings[1].Value + '\n');
+});
+ };
+
+function LetsdoIt(){
+
+fs.readFile('random.txt', 'utf8', function(err, data){
+		if (err){
+			console.log(err);
+		}
+var input = data.split(',');
+command = input[0];
+userInput = input[1];
+Get(command);
+})
+}
+
+function Get(command){
+
+      switch (command){
+      case 'my-tweets':
+      getTweets();
+      break;
+
+      case 'spotify-this-song':
+      getSpotify(userInput);
+      break;
+
+      case 'movie-this':
+      movies(userInput);
+      break;
+
+      case 'do-what-it-says':
+      LetsdoIt();
+      break;
+
+         }
+    }
+
+    Get(command);
+
+  function logFile(){
+
+  var getData = logArray[1].join('');
+
+	var logData = command + ',' + '"'+ getData +'"'+'\n';
+
+	fs.appendFile('log.txt', logData, function(err){
+		if(err) throw err;
+		console.log('Log Updated!!')
 	})
 }
