@@ -3,26 +3,25 @@ var Twitter = require("twitter");
 var fs = require('fs');
 var command = process.argv[2];
 var spotify = require('spotify');
+// nice use of `.slice` here
 var userInput = process.argv.slice(3);
 var request = require('request');
 var logArray = [command, userInput];
 
 
 function getTweets(){
+  // since you've already named your twitter keys the same as what the Twitter client expects
+  // you can simply pass those in instead of redundantly naming them.
+  var client = new Twitter(twitterKeys.twitterKeys)
 
-  var client = new Twitter({
-	  consumer_key: twitterKeys.twitterKeys.consumer_key,
-	  consumer_secret: twitterKeys.twitterKeys.consumer_secret,
-	  access_token_key: twitterKeys.twitterKeys.access_token_key,
-	  access_token_secret: twitterKeys.twitterKeys.access_token_secret
-});
-
-var params = { screen_name: 'realDonaldTrump'};
+  // It may seem silly, but consistent indentation makes parsing your code considerably easier
+  var params = { screen_name: 'realDonaldTrump'};
 
   client.get('statuses/user_timeline', params, function(error, tweets, response) {
 
     if (!error) {
-      console.log(tweets[19].created_at);
+      // not sure why you were logging out the created_at of the last tweet, but it breaks from the expected behavior
+      // console.log(tweets[19].created_at);
       var data = []; //empty array to hold data
       for (var i = 0; i < tweets.length; i++) {
        console.log(tweets[i].created_at +'\n'+ tweets[i].text);
@@ -61,6 +60,15 @@ function movies(){
   }
 var urlMovie = "http://www.omdbapi.com/?t=" + userInput + "&y=&plot=short&r=json"
 request (urlMovie, function(err, response, body) {
+
+  // you should check to see if there's an error before logging out the results and you should
+  // halt the execution of this function if there is one like so:
+  if (err) {
+    // display the error
+    console.log(err)
+    // this will return out of the function and prevent any further code from running
+    return
+  }
 
 var moviePath = JSON.parse(body);
   console.log('\n Movie: ' + moviePath.Title + '\n Released: ' + moviePath.Year

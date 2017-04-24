@@ -1,4 +1,5 @@
-console.log('this is loaded');
+// probably should remove extra console.log statements once you confirm the file was loaded
+// console.log('this is loaded');
 
 exports.twitterKeys = {
   consumer_key: '4UjF0omkAatO7hPqSQY61NJcX',
